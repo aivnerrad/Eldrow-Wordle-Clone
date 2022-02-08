@@ -1,16 +1,16 @@
 body{
   margin: 0;
-  padding: 1em;
-  min-height: 100vh;
+  padding: 1rem;
+  min-height: 97vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .header{
-  font-size: 2em;
+  font-size: 2rem;
   font-weight: 700;
 }
 .guess-board{
@@ -18,22 +18,31 @@ body{
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  width: 21em;
+  width: 21rem;
 }
 .guess-block{
-  height: 3em;
-  width: 3em;
-  border: .1em solid gray;
+  height: 3.5em;
+  width: 3.5em;
+  border: .15em solid #D3D6DA;
   margin: .2em;
 }
 
 .keyboard{
   display: grid;
-  grid-template-rows: repeat(3, 2em);
-  grid-template-columns: repeat(20, 2em);
+  grid-template-rows: repeat(3, 4em);
+  grid-template-columns: repeat(20, 1.6em);
   box-sizing: border-box;
 }
 
 .key{
   grid-column: span 2;
+  margin: .2em;
+  background-color: #D3D6DA;
+  border: none;
+  border-radius: .5em;
+}
+
+
+.big-button{
+  grid-column: span 3;
 }

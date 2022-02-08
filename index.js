@@ -6,11 +6,76 @@ const dictionaryWords = ["aahed","aalii","aargh","aarti","abaca","abaci","abacs"
 
 let today = new Date()
 let answerIndex = today.getDate() + today.getMonth() + today.getYear();
-let answer = targetWords[answerIndex];
-let buttons = document.querySelectorAll("button")
-let guesses = document.getElementsByClassName("guess-block")
+let answerWord = targetWords[answerIndex];
+
+let guessWord = "";
+
+let currentBlock = document.querySelector("div.guess-block[data-value='']");
+let lastBlock;
+
+function getCurrentBlock(){
+  return currentBlock = document.querySelector("div.guess-block[data-value='']");
+}
+function getLastBlock(){
+  return lastBlock = document.querySelector(`div.guess-block[data-value=${guessWord[guessWord.length - 1]}]`);
+}
+let guesses = document.querySelectorAll("div.guess-block");
+
+let buttons = document.querySelectorAll("button");
+
+const inputLetter =  (guessBlock, letter) => {
+  if(guessWord.length < 5){
+  guessBlock.innerHTML = letter;
+  guessBlock.dataset.value = letter;
+  guessWord += letter;
+  getCurrentBlock()
+  getLastBlock()
+  }else{
+    console.log("Guess at maximum length")
+  }
+}
+
+const deleteLetter = (currentBlock) => {
+  if(guessWord.length > 0){
+    currentBlock.innerHTML = "";
+    currentBlock.dataset.value = "";
+    guessWord = guessWord.substring(0, guessWord.length - 1)
+    getCurrentBlock();
+    getLastBlock();
+  }
+}
+
+const submitGuess = (guessWord) => {
+  if(guessWord.length === 5){
+    console.log(guessWord === answerWord)
+  }else{
+    console.log("Guess is not long enough")
+  }
+}
+buttons.forEach(button => {
+  button.addEventListener("click", () => {
+    if(button.dataset.key.length === 1){
+      console.log("You pressed a letter")
+      inputLetter(currentBlock ,button.dataset.key)
+      console.log({currentBlock: currentBlock.dataset.value})
+      console.log({lastBlock: lastBlock.dataset.value})
+      console.log({guessWord})
+    }else if(button.dataset.key === "delete"){
+      deleteLetter(lastBlock)
+      console.log({currentBlock: currentBlock.dataset.value})
+      console.log({lastBlock: lastBlock.dataset.value})
+      console.log({guessWord})
+
+    }else{
+      submitGuess(guessWord)
+      console.log({answerWord})
+      console.log("YOU WIN")
+    }
+  })
+})
+
+
 let guessCount = 0;
-console.log({guesses})
-console.log({buttons})
-console.log({today})
-console.log({answerIndex})
+if(guessCount > 6){
+  console.log("You lose. Play again tomorrow!")
+}
