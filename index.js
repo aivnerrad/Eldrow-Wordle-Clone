@@ -8,16 +8,34 @@ let today = new Date()
 let answerIndex = today.getDate() + today.getMonth() + today.getYear();
 let answerWord = targetWords[answerIndex];
 
+
 let guessWord = "";
 
 let currentBlock = document.querySelector("div.guess-block[data-value='']");
 let lastBlock;
+let blockState;
+const statuses = {
+  "filled": "border: .05em solid black",
+  "correct": "background-color: green, color: white",
+  "not-filled": "border: .1em solid #D3D6DA",
+  "wrong": "background-color: #878a8c, color: white"
+}
 
 function getCurrentBlock(){
   return currentBlock = document.querySelector("div.guess-block[data-value='']");
 }
 function getLastBlock(){
   return lastBlock = document.querySelector(`div.guess-block[data-value=${guessWord[guessWord.length - 1]}]`);
+}
+function getBlockState(){
+  return blockState = currentBlock.dataset.state;
+}
+function changeBlockColor(){
+  getBlockState();
+  currentBlock.style = statuses[blockState]
+  if(lastBlock){
+    return lastBlock.style = statuses[blockState]
+  }
 }
 let guesses = document.querySelectorAll("div.guess-block");
 
@@ -27,7 +45,9 @@ const inputLetter =  (guessBlock, letter) => {
   if(guessWord.length < 5){
   guessBlock.innerHTML = letter;
   guessBlock.dataset.value = letter;
+  guessBlock.dataset.state = "filled";
   guessWord += letter;
+  changeBlockColor()
   getCurrentBlock()
   getLastBlock()
   }else{
@@ -39,7 +59,9 @@ const deleteLetter = (currentBlock) => {
   if(guessWord.length > 0){
     currentBlock.innerHTML = "";
     currentBlock.dataset.value = "";
+    currentBlock.dataset.state = "not-filled"
     guessWord = guessWord.substring(0, guessWord.length - 1)
+    changeBlockColor()
     getCurrentBlock();
     getLastBlock();
   }
@@ -58,12 +80,12 @@ buttons.forEach(button => {
       console.log("You pressed a letter")
       inputLetter(currentBlock ,button.dataset.key)
       console.log({currentBlock: currentBlock.dataset.value})
-      console.log({lastBlock: lastBlock.dataset.value})
+      console.log({lastBlock: lastBlock?.dataset.value})
       console.log({guessWord})
     }else if(button.dataset.key === "delete"){
       deleteLetter(lastBlock)
       console.log({currentBlock: currentBlock.dataset.value})
-      console.log({lastBlock: lastBlock.dataset.value})
+      console.log({lastBlock: lastBlock?.dataset.value})
       console.log({guessWord})
 
     }else{

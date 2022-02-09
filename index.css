@@ -6,7 +6,7 @@ body{
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .header{
@@ -18,13 +18,20 @@ body{
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  width: 21rem;
+  width: 22rem;
 }
 .guess-block{
-  height: 3.5em;
-  width: 3.5em;
-  border: .15em solid #D3D6DA;
-  margin: .2em;
+  height: 4rem;
+  width: 4rem;
+  border: .1em solid #D3D6DA;
+  margin: .1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-size: 2rem;
+  font-weight: 550;
+
 }
 
 .keyboard{
@@ -41,7 +48,11 @@ body{
   border: none;
   border-radius: .5em;
 }
-
+.key:hover{
+  cursor: pointer;
+  background-color:  #D3D6DA;
+  filter: brightness(110%);
+}
 
 .big-button{
   grid-column: span 3;
