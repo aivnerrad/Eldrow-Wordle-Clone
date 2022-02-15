@@ -15,12 +15,10 @@ let guesses = Array.from(document.querySelectorAll("div.guess-block"));
 let guessWord = "";
 let nextEmptyTile = document.querySelector("div.guess-block[data-value='']")
 let lastInputCharacter = document.querySelector(`div.guess-block[data-value=${guessWord[guessWord.length - 1]}]`)
-console.log({lastInputCharacter: lastInputCharacter?.dataset.value})
-
-
 
 /* Initialize blockState variable and create statuses with corresponding css properties */
 let blockState;
+let keyState;
 const statuses = {
   "filled": "border: .05em solid black",
   "not-filled": "border: .1em solid #D3D6DA",
@@ -66,6 +64,14 @@ const deleteLetter = (block) => {
     changeBlockColor(block);
   }
 }
+function getKeyState(key){
+  return keyState = key.dataset.state;
+}
+function changeKeyColor(key){
+  console.log({key})
+  getKeyState(key);
+  return key.style = statuses[keyState]
+}
 
 const submitGuess = () => {
   let guessCount = 0;
@@ -75,15 +81,24 @@ const submitGuess = () => {
   if(guessWord.length === 5){
     let guessBlocks = guesses.splice(0, 5);
     for(let i = 0; i < guessWord.length; i++){
+      let key = document.querySelector(`button.key[data-key=${guessWord[i]}]`)
+      console.log(guessWord[i])
+      console.log({key})
       if(guessWord[i].toLowerCase() === answerWord[i]){
         guessBlocks[i].dataset.state = "correct";
+        key.dataset.state = "correct";
         changeBlockColor(guessBlocks[i]);
+        changeKeyColor(key);
       }else if(answerWord.includes(guessWord[i].toLowerCase())){
         guessBlocks[i].dataset.state = "wrong-place";
+        key.dataset.state = "wrong-place";
         changeBlockColor(guessBlocks[i]);
+        changeKeyColor(key);
       }else{
         guessBlocks[i].dataset.state = "wrong";
+        key.dataset.state = "wrong";
         changeBlockColor(guessBlocks[i]);
+        changeKeyColor(key);
       }
     }
     guessWord = "";
