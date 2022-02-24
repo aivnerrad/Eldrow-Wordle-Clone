@@ -59,6 +59,9 @@ body{
   grid-column: span 3;
 }
 
+.user-alert{
+  display: none;
+}
 
 /*Animations built by Animista.net*/
 
