@@ -6,19 +6,32 @@ const dictionaryWords = ["aahed","aalii","aargh","aarti","abaca","abaci","abacs"
 
 /* Initialize local storage object to access/save user's game data */
 const userStats = window.localStorage;
-let timesPlayed;
-let winStreak;
+let timesPlayed = userStats.getItem("times-played");
+let winStreak = userStats.getItem("win-streak");
 const firstTimer = () => {
-  timesPlayed = 0;
-  userStats.setItem("times-played", timesPlayed.toString())
+  userStats.setItem("times-played", "1")
   userStats.setItem("win-streak","0");
   startGame()
 }
 const startGame = () => {
- document.querySelector(".win-streak").innerHTML = `Win Streak: ${winStreak ? winStreak : 0}`
-  ++timesPlayed;
+  document.querySelector(".win-streak").innerHTML = `Win Streak: ${winStreak ? winStreak : 0}`;
+  timesPlayed++;
   return userStats.setItem("times-played", timesPlayed.toString());
 }
+const updateWinStreak = () => {
+  winStreak++;
+  return userStats.setItem("win-streak", winStreak.toString());
+}
+const breakWinStreak = () => {
+  return userStats.setItem("win-streak", "0")
+}
+const resetStats = () => {
+  userStats.setItem("times-played", "1")
+  userStats.setItem("win-streak", "0")
+}
+let resetButton = document.querySelector(".reset-button");
+resetButton.addEventListener("click", resetStats)
+
 if(!timesPlayed){
   firstTimer();
 }else{
@@ -56,7 +69,8 @@ function changeBlockColor(block){
   return block.style = statuses[blockState]
 }
 function flipBlock(block){
-  return block.classList.add("flip-horizontal-top")
+  block.classList.add("flip-horizontal-top")
+  return
 }
 
 /* Create button functions for inputing/deleting/submitting guesses */
@@ -71,7 +85,6 @@ const inputLetter =  (block, letter) => {
     nextEmptyTile = document.querySelector("div.guess-block[data-value='']")
     /*This mess fixes the delete button in the case of duplicate letter inputs.(e.g. If the word was 'PPPPP' on delete, the app would delete the first 'P' in the word instead of the last.)*/
     lastInputCharacter = document.querySelectorAll(`div.guess-block[data-value=${guessWord[guessWord.length - 1]}]`)[document.querySelectorAll(`div.guess-block[data-value=${guessWord[guessWord.length - 1]}]`).length - 1];
-    console.log({lastInputCharacter})
     changeBlockColor(block)
   }else{
     console.log("Guess at maximum length")
@@ -96,7 +109,6 @@ function getKeyState(key){
   return keyState = key.dataset.state;
 }
 function changeKeyColor(key){
-  console.log({key})
   getKeyState(key);
   return key.style = statuses[keyState]
 }
@@ -104,47 +116,43 @@ function changeKeyColor(key){
 const checkAnswer = async() => {
   let guessCount = 0;
   if(guessWord.toLowerCase() === answerWord.toLowerCase()){
-    if(isNaN(winStreak)){
-      winStreak = 1;
-      userStats.setItem("win-streak", winStreak.toString());
-    }else{
-      winStreak++;
-      userStats.setItem("win-streak", winStreak.toString());
-    }
-  }
+    updateWinStreak()
+  }else breakWinStreak();
   guessWord = "";
   guessCount++;
-  if(guessCount > 6){
+  if(guessCount === 6){
     window.alert("You lose. Play again tomorrow!");
     winStreak = 0;
   }
-  console.log({userStats})
  }
 const submitGuess = () => {
-  if(guessWord.length === 5){
-    let guessBlocks = guesses.splice(0, 5);
-    for(let i = 0; i < guessWord.length; i++){
-      let key = document.querySelector(`button.key[data-key=${guessWord[i]}]`)
-      flipBlock(guessBlocks[i])
-      console.log(guessWord[i])
-      console.log({key})
-      if(guessWord[i].toLowerCase() === answerWord[i]){
-        guessBlocks[i].dataset.state = "correct";
-        key.dataset.state = "correct";
-        changeBlockColor(guessBlocks[i]);
-        changeKeyColor(key);
-      }else if(answerWord.includes(guessWord[i].toLowerCase())){
-        guessBlocks[i].dataset.state = "wrong-place";
-        key.dataset.state = "wrong-place";
-        changeBlockColor(guessBlocks[i]);
-        changeKeyColor(key);
-      }else{
-        guessBlocks[i].dataset.state = "wrong";
-        key.dataset.state = "wrong";
-        changeBlockColor(guessBlocks[i]);
-        changeKeyColor(key);
-      }
-    }
+  if(guessWord.length !== 5) return window.alert("Not enough characters")
+  if(!targetWords.includes(guessWord)) return window.alert("Not an Eldrow word")
+  let guessBlocks = guesses.splice(0, 5);
+  for(let i = 0; i < guessWord.length; i++){
+    let key = document.querySelector(`button.key[data-key=${guessWord[i]}]`);
+    (function flipLoop(i, guessWord, guessBlocks) {
+      setTimeout(function() {
+        flipBlock(guessBlocks[i]);
+        if(guessWord[i].toLowerCase() === answerWord[i]){
+          guessBlocks[i].dataset.state = "correct";
+          key.dataset.state = "correct";
+          changeBlockColor(guessBlocks[i]);
+          changeKeyColor(key);
+        }else if(answerWord.includes(guessWord[i].toLowerCase())){
+          guessBlocks[i].dataset.state = "wrong-place";
+          key.dataset.state = "wrong-place";
+          changeBlockColor(guessBlocks[i]);
+          changeKeyColor(key);
+        }else{
+          guessBlocks[i].dataset.state = "wrong";
+          key.dataset.state = "wrong";
+          changeBlockColor(guessBlocks[i]);
+          changeKeyColor(key);
+        }
+        if (++i < guessWord.length ) flipLoop();   //  decrement i and call myLoop again if i > 0
+      }, i * 500)
+    })(i, guessWord, guessBlocks);
   }
   checkAnswer()
 }
@@ -156,7 +164,6 @@ buttons.forEach(button => {
       deleteLetter(lastInputCharacter)
     }else{
       submitGuess()
-      console.log({answerWord})
     }
   })
 })
